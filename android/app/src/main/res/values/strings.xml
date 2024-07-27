@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">RnYangwenhua</string>
+    <string moduleConfig="true" name="CodePushDeploymentKey">Wo9DeCETJaxLXYbM43xiXcfVooCx_tZioolX1</string>
 </resources>
