@@ -27,27 +27,27 @@ const App = () => {
 								optionalUpdateMessage: '发现新版本了，是否更新？',
 								title: '更新提示',
 							},
-							installMode: CodePush.InstallMode.IMMEDIATE,
+							installMode: CodePush.InstallMode.ON_NEXT_RESTART,
 						},
 						status => {
 							switch (status) {
 								case CodePush.SyncStatus.UP_TO_DATE:
-									Toast.info('当前已是最新版本!' + status);
+									Toast.info('当前已是最新版本!：' + status);
 									break;
 								case CodePush.SyncStatus.SYNC_IN_PROGRESS:
-									Toast.info('后台正在下载，请耐心等待!' + status);
+									Toast.info('后台正在下载，请耐心等待!：' + status);
 									break;
 								case CodePush.SyncStatus.CHECKING_FOR_UPDATE:
-									Toast.info('正在检查更新，请稍后再试!' + status);
+									Toast.info('正在检查更新，请稍后再试!：' + status);
 									break;
 								case CodePush.SyncStatus.DOWNLOADING_PACKAGE:
-									Toast.info('正在下载中……' + status);
+									Toast.info('正在下载中……：' + status);
 									break;
 								case CodePush.SyncStatus.INSTALLING_UPDATE:
-									Toast.info('已安装更新内容，请重启应用！' + status);
+									Toast.info('已安装更新内容，请重启应用！：' + status, 5);
 									break;
 								case CodePush.SyncStatus.UNKNOWN_ERROR:
-									Toast.info('更新遇到错误，请稍后再试!' + status);
+									Toast.info('更新遇到错误，请稍后再试!：' + status);
 									break;
 								default:
 									break;
@@ -74,21 +74,19 @@ const App = () => {
 
 	return <Provider>
 		<View style={{ flex: 1 }}>
-			<View>
-				<Text>首页123</Text>
-			</View>
-			<View>
-				<Text>v1.0.1 才能看到</Text>
-			</View>
-			<View>
-				<Text style={{ color: '#F84532', fontSize: 20 }}>v1.0.2 才能看到</Text>
-			</View>
-			<View>
-				<Text style={{ color: '#F84532', fontSize: 22 }}>v1.0.3 才能看到</Text>
-			</View>
-			<Button onPress={onCheck}>
+			<Button style={{ marginVertical: 10 }} onPress={onCheck}>
 				检查更新
 			</Button>
+			<View>
+				<View>
+					<Text style={{ color: '#F84532', fontSize: 16 }}>2024-7-31 16:41:52 初始化</Text>
+				</View>
+			</View>
+			<View>
+				<View>
+					<Text style={{ color: '#F84532', fontSize: 16 }}>2024-7-31 17:07:32 初始化</Text>
+				</View>
+			</View>
 		</View>
 	</Provider>
 
