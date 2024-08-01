@@ -87,6 +87,16 @@ const App = () => {
 					<Text style={{ color: '#F84532', fontSize: 16 }}>2024-7-31 17:07:32 初始化</Text>
 				</View>
 			</View>
+			<View>
+				<View>
+					<Text style={{ color: '#F84532', fontSize: 16 }}>2024-7-31 17:07:32 更新</Text>
+				</View>
+			</View>
+			<View>
+				<View>
+					<Text style={{ color: '#F84532', fontSize: 16 }}>2024-8-1 09:55:54 更新</Text>
+				</View>
+			</View>
 		</View>
 	</Provider>
 
