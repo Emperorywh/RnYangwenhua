@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
 	Text,
 	View,
@@ -72,6 +72,10 @@ const App = () => {
 			});
 	}
 
+	useEffect(() => {
+		CodePush.notifyAppReady();
+	}, [])
+
 	return <Provider>
 		<View style={{ flex: 1 }}>
 			<Button style={{ marginVertical: 10 }} onPress={onCheck}>
@@ -84,17 +88,12 @@ const App = () => {
 			</View>
 			<View>
 				<View>
-					<Text style={{ color: '#F84532', fontSize: 16 }}>2024-7-31 17:07:32 初始化</Text>
+					<Text style={{ color: '#F84532', fontSize: 16 }}>2024-8-7 15:11:15 更新</Text>
 				</View>
 			</View>
 			<View>
 				<View>
-					<Text style={{ color: '#F84532', fontSize: 16 }}>2024-7-31 17:07:32 更新</Text>
-				</View>
-			</View>
-			<View>
-				<View>
-					<Text style={{ color: '#F84532', fontSize: 16 }}>2024-8-1 09:55:54 更新</Text>
+					<Text style={{ color: '#F84532', fontSize: 16 }}>2024-8-7 15:29:43 更新</Text>
 				</View>
 			</View>
 		</View>
