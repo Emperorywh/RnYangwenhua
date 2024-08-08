@@ -3,6 +3,7 @@ import { Provider } from '@ant-design/react-native';
 import CodePush from 'react-native-code-push';
 import { NavigationContainer } from '@react-navigation/native';
 import StackNavigator from './src/components/StackNavigator';
+import { StatusBar } from 'react-native';
 const App = () => {
 
 	useEffect(() => {
@@ -12,6 +13,10 @@ const App = () => {
 	return (
 		<Provider>
 			<NavigationContainer>
+				<StatusBar
+					barStyle="dark-content"
+					backgroundColor="#ededed"
+				/>
 				<StackNavigator></StackNavigator>
 			</NavigationContainer>
 		</Provider>
