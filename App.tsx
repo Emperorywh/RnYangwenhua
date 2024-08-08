@@ -11,83 +11,79 @@ import icon from './src/icon';
 import { SvgXml } from 'react-native-svg';
 
 const Tab = createBottomTabNavigator();
-const App = () => {
 
+const TabBarIcon = ({ route, focused }: any) => {
+	let iconXml;
+	switch (route.name) {
+		case 'Chat':
+			iconXml = focused ? icon.Chat_Active : icon.Chat;
+			break;
+		case 'Contact':
+			iconXml = focused ? icon.Contact_Active : icon.Contact;
+			break;
+		case 'Found':
+			iconXml = focused ? icon.Found_Active : icon.Found;
+			break;
+		case 'Mine':
+			iconXml = focused ? icon.User_Active : icon.User;
+			break;
+		default:
+			iconXml = icon.Chat;
+	}
+	return <SvgXml width="28" height="28" xml={iconXml} />;
+};
+
+const App = () => {
 	useEffect(() => {
 		CodePush.notifyAppReady();
-	}, [])
+	}, []);
 
-	return <Provider>
-		<NavigationContainer>
-			<Tab.Navigator
-				initialRouteName='Chat'
-				screenOptions={({ route }) => ({
-					tabBarIcon: ({ focused, color, size }) => {
-						if (route.name === 'Mine') {
-							return <SvgXml
-								width="28"
-								height="28"
-								xml={focused ? icon.User_Active : icon.User}
-							/>
-						} else if (route.name === 'Contact') {
-							return <SvgXml
-								width="28"
-								height="28"
-								xml={focused ? icon.Contact_Active : icon.Contact}
-							/>
-						} else if (route.name === 'Found') {
-							return <SvgXml
-								width="28"
-								height="28"
-								xml={focused ? icon.Found_Active : icon.Found}
-							/>
-						} else {
-							return <SvgXml
-								width="28"
-								height="28"
-								xml={focused ? icon.Chat_Active : icon.Chat}
-							/>
-						}
-					},
-					tabBarActiveTintColor: '#07c160',
-					tabBarInactiveTintColor: '#010101',
-					tabBarStyle: {
-						backgroundColor: '#f7f7f7',
-						height: 50
-					}
-				})}
-			>
-				<Tab.Screen
-					name="Chat"
-					component={Chat}
-					options={{
-						tabBarLabel: '微信'
-					}}
-				/>
-				<Tab.Screen
-					name="Contact"
-					component={Contact}
-					options={{
-						tabBarLabel: '通讯录'
-					}}
-				/>
-				<Tab.Screen
-					name="Found"
-					component={Found}
-					options={{
-						tabBarLabel: '发现'
-					}}
-				/>
-				<Tab.Screen
-					name="Mine"
-					component={Mine}
-					options={{
-						tabBarLabel: '我'
-					}}
-				/>
-			</Tab.Navigator>
-		</NavigationContainer>
-	</Provider>
-}
+	return (
+		<Provider>
+			<NavigationContainer>
+				<Tab.Navigator
+					initialRouteName='Chat'
+					screenOptions={({ route }) => ({
+						tabBarIcon: ({ focused }) => <TabBarIcon route={route} focused={focused} />,
+						tabBarActiveTintColor: '#07c160',
+						tabBarInactiveTintColor: '#010101',
+						tabBarStyle: {
+							backgroundColor: '#f7f7f7',
+						},
+					})}
+				>
+					<Tab.Screen
+						name="Chat"
+						component={Chat}
+						options={{
+							tabBarLabel: '微信'
+						}}
+					/>
+					<Tab.Screen
+						name="Contact"
+						component={Contact}
+						options={{
+							tabBarLabel: '通讯录'
+						}}
+					/>
+					<Tab.Screen
+						name="Found"
+						component={Found}
+						options={{
+							tabBarLabel: '发现'
+						}}
+					/>
+					<Tab.Screen
+						name="Mine"
+						component={Mine}
+						options={{
+							tabBarLabel: '我'
+						}}
+					/>
+				</Tab.Navigator>
+			</NavigationContainer>
+		</Provider>
+	);
+};
 
 export default App;
