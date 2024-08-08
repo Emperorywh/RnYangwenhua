@@ -1,13 +1,13 @@
-import { useEffect } from "react";
 import { Text, View } from "react-native";
-
+import useBackHandler from "../../hooks/useBackHandler";
+/**
+ * 私聊
+ * @returns 
+ */
 function ChatPrivate() {
-    useEffect(() => {
-        console.log("ChatPrivate 挂载")
-        return () => {
-            console.log("ChatPrivate 卸载")
-        }
-    }, []);
+
+    useBackHandler();
+
     return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             <Text>私聊</Text>

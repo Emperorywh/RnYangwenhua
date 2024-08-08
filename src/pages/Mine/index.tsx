@@ -1,6 +1,12 @@
 import { Button, Toast } from "@ant-design/react-native";
+import { useEffect } from "react";
 import { View } from "react-native";
 import CodePush from 'react-native-code-push';
+
+/**
+ * 我的
+ * @returns 
+ */
 function Mine() {
     const onCheck = () => {
         const key = Toast.loading({
