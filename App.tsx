@@ -4,6 +4,7 @@ import CodePush from 'react-native-code-push';
 import { NavigationContainer } from '@react-navigation/native';
 import StackNavigator from './src/components/StackNavigator';
 import { StatusBar } from 'react-native';
+import { RecoilRoot } from 'recoil';
 const App = () => {
 
 	useEffect(() => {
@@ -11,15 +12,17 @@ const App = () => {
 	}, []);
 
 	return (
-		<Provider>
-			<NavigationContainer>
-				<StatusBar
-					barStyle="dark-content"
-					backgroundColor="#ededed"
-				/>
-				<StackNavigator></StackNavigator>
-			</NavigationContainer>
-		</Provider>
+		<RecoilRoot>
+			<Provider>
+				<NavigationContainer>
+					<StatusBar
+						barStyle="dark-content"
+						backgroundColor="#ededed"
+					/>
+					<StackNavigator></StackNavigator>
+				</NavigationContainer>
+			</Provider>
+		</RecoilRoot>
 	);
 };
 
