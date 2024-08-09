@@ -10,6 +10,7 @@ function TabNavigator() {
     return <Tab.Navigator
         initialRouteName='Chat'
         screenOptions={({ route }) => ({
+            keyboardHidesTabBar: false,
             headerShown: false,
             tabBarIcon: ({ focused }) => <TabBarIcon route={route} focused={focused} />,
             tabBarActiveTintColor: '#07c160',

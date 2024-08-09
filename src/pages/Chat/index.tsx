@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Text, View } from "react-native";
 import { todoListState } from "../../store/todoList";
 import { useRecoilState } from "recoil";
-import { Input } from '@ant-design/react-native'
+import Input from "@ant-design/react-native/lib/input-item/Input";
 /**
  * 聊天列表
  * @param param0 
@@ -35,7 +35,7 @@ function Chat() {
                 onChangeText={setValue}
             />
             <Button style={{ marginBottom: 10 }} type="primary" onPress={() => {
-                setTodoList([...todoList, { id: Date.now().toString(), content: value }]);
+                setTodoList([...todoList, { id: '1111111111111', content: value }]);
                 setValue('');
             }}>
                 添加
