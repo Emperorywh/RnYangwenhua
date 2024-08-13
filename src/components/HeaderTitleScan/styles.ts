@@ -1,5 +1,5 @@
-import {StyleSheet} from 'react-native';
-
+import {Dimensions, StyleSheet} from 'react-native';
+const {width, height} = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {},
   headerCard: {
@@ -28,10 +28,8 @@ const styles = StyleSheet.create({
   },
   roundPlusCardBackGround: {
     position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
+    width: width,
+    height: height,
     zIndex: 100,
   },
   roundPlusCard: {
@@ -72,7 +70,7 @@ const styles = StyleSheet.create({
   },
   roundPlusItemText: {
     color: '#FFF',
-    fontSize: 18,
+    fontSize: 16,
   },
 });
 

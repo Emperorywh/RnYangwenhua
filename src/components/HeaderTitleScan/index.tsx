@@ -35,12 +35,14 @@ function HeaderTitleScan(props: IProps) {
                 <View style={styles.roundPlusCard}>
                     <View style={styles.triangle}></View>
                     <View style={styles.roundPlusList}>
-                        <View style={styles.roundPlusItem}>
-                            <SvgXml width="24" height="24" xml={icon.Chat("#FFFFFF")} />
-                            <View style={styles.roundPlusItemContent}>
-                                <Text style={styles.roundPlusItemText}>发起群聊</Text>
+                        <TouchableOpacity>
+                            <View style={styles.roundPlusItem}>
+                                <SvgXml width="24" height="24" xml={icon.Chat_Active("#FFFFFF")} />
+                                <View style={styles.roundPlusItemContent}>
+                                    <Text style={styles.roundPlusItemText}>发起群聊</Text>
+                                </View>
                             </View>
-                        </View>
+                        </TouchableOpacity>
                         <View style={styles.roundPlusItem}>
                             <SvgXml width="24" height="24" xml={icon.Add_Friends("#FFFFFF")} />
                             <View style={styles.roundPlusItemContent}>
