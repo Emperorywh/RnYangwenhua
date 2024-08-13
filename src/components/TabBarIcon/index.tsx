@@ -7,19 +7,19 @@ import icon from "../../icon";
  * @returns 
  */
 const TabBarIcon = ({ route, focused }: any) => {
-    let iconXml;
+    let iconXml: any;
     switch (route.name) {
         case 'Chat':
-            iconXml = focused ? icon.Chat_Active : icon.Chat;
+            iconXml = focused ? icon.Chat_Active() : icon.Chat();
             break;
         case 'Contact':
-            iconXml = focused ? icon.Contact_Active : icon.Contact;
+            iconXml = focused ? icon.Contact_Active() : icon.Contact();
             break;
         case 'Found':
-            iconXml = focused ? icon.Found_Active : icon.Found;
+            iconXml = focused ? icon.Found_Active() : icon.Found();
             break;
         case 'Mine':
-            iconXml = focused ? icon.User_Active : icon.User;
+            iconXml = focused ? icon.User_Active() : icon.User();
             break;
         default:
             iconXml = icon.Chat;

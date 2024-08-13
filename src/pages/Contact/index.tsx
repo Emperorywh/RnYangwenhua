@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 import { Text, View } from "react-native";
+import commonStyles from "../common/styles";
+import HeaderTitleScan from "../../components/HeaderTitleScan";
 
 /**
  * 通讯录
@@ -8,8 +10,8 @@ import { Text, View } from "react-native";
 function Contact() {
 
     return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Text>Contact Screen</Text>
+        <View style={[commonStyles.pageContainer]}>
+            <HeaderTitleScan title="通讯录"></HeaderTitleScan>
         </View>
     );
 }

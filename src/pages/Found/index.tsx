@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 import { Text, View } from "react-native";
+import commonStyles from "../common/styles";
+import HeaderTitleScan from "../../components/HeaderTitleScan";
 /**
  * 发现
  * @returns 
@@ -7,8 +9,8 @@ import { Text, View } from "react-native";
 function Found() {
 
     return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Text>Found Screen</Text>
+        <View style={[commonStyles.pageContainer]}>
+            <HeaderTitleScan title="发现"></HeaderTitleScan>
         </View>
     );
 }
