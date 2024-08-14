@@ -59,6 +59,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingLeft: 10,
   },
+  roundPlusItemPressFirst: {
+    backgroundColor: '#3C3C3C',
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+  },
+  roundPlusItemPress: {
+    backgroundColor: '#3C3C3C',
+  },
+  roundPlusItemPressLast: {
+    backgroundColor: '#3C3C3C',
+    borderBottomLeftRadius: 5,
+    borderBottomRightRadius: 5,
+  },
   roundPlusItemContent: {
     flexDirection: 'row',
     alignItems: 'center',

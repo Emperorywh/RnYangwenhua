@@ -3,6 +3,8 @@ import styles from "./styles";
 import { SvgXml } from "react-native-svg";
 import icon from "../../icon";
 import { IProps } from "./index.types";
+import { useRecoilState } from "recoil";
+import { showHeaderPopupState } from "../../store/headerPopUp";
 import { useState } from "react";
 
 /**
@@ -11,7 +13,18 @@ import { useState } from "react";
  */
 function HeaderTitleScan(props: IProps) {
     const { title } = props;
-    const [showAbsolute, setShowAbsolute] = useState(false);
+    const [showHeaderPopup, setShowHeaderPopup] = useRecoilState(showHeaderPopupState);
+    const [bottonPress, setBottonPress] = useState({
+        isPress: false,
+        pressIndex: -1
+    });
+
+    const onPressOut = (event: any) => {
+        console.log(event)
+        setBottonPress({ isPress: false, pressIndex: -1 });
+        // setShowHeaderPopup(false);
+    }
+
     return <View style={styles.container}>
         <View style={styles.headerCard}>
             <View>
@@ -20,41 +33,45 @@ function HeaderTitleScan(props: IProps) {
             <View style={styles.headerIcon}>
                 <TouchableOpacity activeOpacity={1}>
                     <View style={styles.headerIconBox}>
-                        <SvgXml width="20" color="#1A1A1A1" height="20" xml={icon.Magnifying_Glass()} />
+                        <SvgXml width="20" height="20" xml={icon.Magnifying_Glass()} />
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity activeOpacity={1} onPress={() => setShowAbsolute(prev => !prev)}>
+                <TouchableOpacity activeOpacity={1} onPress={() => setShowHeaderPopup(prev => !prev)}>
                     <View style={styles.headerIconBox}>
-                        <SvgXml width="22" height="22" color="#1A1A1A1" xml={icon.Round_Plus()} />
+                        <SvgXml width="22" height="22" xml={icon.Round_Plus()} />
                     </View>
                 </TouchableOpacity>
             </View>
         </View>
         {
-            showAbsolute && <TouchableOpacity activeOpacity={1} style={styles.roundPlusCardBackGround} onPress={() => setShowAbsolute(prev => !prev)}>
-                <View style={styles.roundPlusCard}>
+            showHeaderPopup && <TouchableOpacity activeOpacity={1} style={styles.roundPlusCardBackGround} onPress={() => setShowHeaderPopup(prev => !prev)}>
+                <View style={[styles.roundPlusCard]}>
                     <View style={styles.triangle}></View>
                     <View style={styles.roundPlusList}>
-                        <TouchableOpacity>
-                            <View style={styles.roundPlusItem}>
+                        <TouchableOpacity activeOpacity={1} onPressIn={() => setBottonPress({ isPress: true, pressIndex: 0 })} onPressOut={onPressOut}>
+                            <View style={[styles.roundPlusItem, bottonPress.isPress && bottonPress.pressIndex === 0 ? styles.roundPlusItemPressFirst : {}]}>
                                 <SvgXml width="24" height="24" xml={icon.Chat_Active("#FFFFFF")} />
                                 <View style={styles.roundPlusItemContent}>
                                     <Text style={styles.roundPlusItemText}>发起群聊</Text>
                                 </View>
                             </View>
                         </TouchableOpacity>
-                        <View style={styles.roundPlusItem}>
-                            <SvgXml width="24" height="24" xml={icon.Add_Friends("#FFFFFF")} />
-                            <View style={styles.roundPlusItemContent}>
-                                <Text style={styles.roundPlusItemText}>添加朋友</Text>
+                        <TouchableOpacity activeOpacity={1} onPressIn={() => setBottonPress({ isPress: true, pressIndex: 1 })} onPressOut={onPressOut}>
+                            <View style={[styles.roundPlusItem, bottonPress.isPress && bottonPress.pressIndex === 1 ? styles.roundPlusItemPress : {}]}>
+                                <SvgXml width="24" height="24" xml={icon.Add_Friends("#FFFFFF")} />
+                                <View style={styles.roundPlusItemContent}>
+                                    <Text style={styles.roundPlusItemText}>添加朋友</Text>
+                                </View>
                             </View>
-                        </View>
-                        <View style={styles.roundPlusItem}>
-                            <SvgXml width="24" height="24" xml={icon.Wechat_Scan("#FFFFFF")} />
-                            <View style={styles.roundPlusItemContent}>
-                                <Text style={styles.roundPlusItemText}>扫一扫</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity activeOpacity={1} onPressIn={() => setBottonPress({ isPress: true, pressIndex: 2 })} onPressOut={onPressOut}>
+                            <View style={[styles.roundPlusItem, bottonPress.isPress && bottonPress.pressIndex === 2 ? styles.roundPlusItemPressLast : {}]}>
+                                <SvgXml width="24" height="24" xml={icon.Wechat_Scan("#FFFFFF")} />
+                                <View style={styles.roundPlusItemContent}>
+                                    <Text style={styles.roundPlusItemText}>扫一扫</Text>
+                                </View>
                             </View>
-                        </View>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </TouchableOpacity>

@@ -4,11 +4,19 @@ import Contact from '../../pages/Contact';
 import Found from '../../pages/Found';
 import Mine from '../../pages/Mine';
 import TabBarIcon from '../TabBarIcon';
+import { useRecoilState } from 'recoil';
+import { showHeaderPopupState } from '../../store/headerPopUp';
 
 function TabNavigator() {
     const Tab = createBottomTabNavigator();
+    const [showHeaderPopup, setShowHeaderPopup] = useRecoilState(showHeaderPopupState)
     return <Tab.Navigator
         initialRouteName='Chat'
+        screenListeners={{
+            tabPress: () => {
+                setShowHeaderPopup(false);
+            }
+        }}
         screenOptions={({ route }) => ({
             keyboardHidesTabBar: false,
             headerShown: false,
