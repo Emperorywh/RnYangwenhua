@@ -4,6 +4,7 @@ import Contact from '../pages/Contact';
 import Found from '../pages/Found';
 import Mine from '../pages/Mine';
 import Chat from '../pages/Chat';
+import Scanner from '../pages/Scanner';
 
 export default [
   {
@@ -29,5 +30,9 @@ export default [
   {
     name: 'Mine',
     component: Mine,
+  },
+  {
+    name: 'Scanner',
+    component: Scanner,
   },
 ];

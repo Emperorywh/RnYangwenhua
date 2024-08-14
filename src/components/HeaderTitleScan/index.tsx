@@ -6,6 +6,7 @@ import { IProps } from "./index.types";
 import { useRecoilState } from "recoil";
 import { showHeaderPopupState } from "../../store/headerPopUp";
 import { useState } from "react";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 
 /**
  * 微信、通讯录、发现 通用顶部导航栏
@@ -13,16 +14,27 @@ import { useState } from "react";
  */
 function HeaderTitleScan(props: IProps) {
     const { title } = props;
+    const navigation = useNavigation<NavigationProp<any>>();
     const [showHeaderPopup, setShowHeaderPopup] = useRecoilState(showHeaderPopupState);
     const [bottonPress, setBottonPress] = useState({
         isPress: false,
         pressIndex: -1
     });
 
-    const onPressOut = (event: any) => {
-        console.log(event)
+    const onPressOut = () => {
         setBottonPress({ isPress: false, pressIndex: -1 });
-        // setShowHeaderPopup(false);
+        setShowHeaderPopup(false);
+    }
+
+    const onScanner = () => {
+        navigation.navigate("Scanner", {
+            onScanSuccess: (result: any) => {
+                console.log("onScanSuccess", result)
+            },
+            onScanCancel: (result: any) => {
+                console.log("onScanCancel", result)
+            }
+        });
     }
 
     return <View style={styles.container}>
@@ -64,7 +76,7 @@ function HeaderTitleScan(props: IProps) {
                                 </View>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity activeOpacity={1} onPressIn={() => setBottonPress({ isPress: true, pressIndex: 2 })} onPressOut={onPressOut}>
+                        <TouchableOpacity activeOpacity={1} onPress={onScanner} onPressIn={() => setBottonPress({ isPress: true, pressIndex: 2 })} onPressOut={onPressOut}>
                             <View style={[styles.roundPlusItem, bottonPress.isPress && bottonPress.pressIndex === 2 ? styles.roundPlusItemPressLast : {}]}>
                                 <SvgXml width="24" height="24" xml={icon.Wechat_Scan("#FFFFFF")} />
                                 <View style={styles.roundPlusItemContent}>
