@@ -13,7 +13,7 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
  * @returns 
  */
 function HeaderTitleScan(props: IProps) {
-    const { title } = props;
+    const { title, onScanSuccess, onScanCancel } = props;
     const navigation = useNavigation<NavigationProp<any>>();
     const [showHeaderPopup, setShowHeaderPopup] = useRecoilState(showHeaderPopupState);
     const [bottonPress, setBottonPress] = useState({
@@ -28,12 +28,8 @@ function HeaderTitleScan(props: IProps) {
 
     const onScanner = () => {
         navigation.navigate("Scanner", {
-            onScanSuccess: (result: any) => {
-                console.log("onScanSuccess", result)
-            },
-            onScanCancel: (result: any) => {
-                console.log("onScanCancel", result)
-            }
+            onScanSuccess,
+            onScanCancel
         });
     }
 

@@ -1,8 +1,8 @@
-import { Animated, Dimensions, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Animated, Dimensions, Image, LayoutRectangle, StatusBar, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
 import styles from "./styles";
 import { IProps, ScannerRouteProp } from "./index.types";
-import { Camera, useCameraDevice, useCameraPermission, useCodeScanner } from "react-native-vision-camera";
-import { useEffect, useRef } from "react";
+import { Camera, Code, useCameraDevice, useCameraPermission, useCodeScanner } from "react-native-vision-camera";
+import { useEffect, useRef, useState } from "react";
 import LinearGradient from 'react-native-linear-gradient';
 import { SvgXml } from "react-native-svg";
 import icon from "../../icon";
@@ -13,23 +13,48 @@ import { NavigationProp, useNavigation, useRoute } from "@react-navigation/nativ
  */
 function Scanner(props: IProps) {
     const { onScanSuccess, onScanCancel } = useRoute<ScannerRouteProp>()?.params || {};
+    const [layout, setLayout] = useState<LayoutRectangle | null>(null);
     const navigation = useNavigation<NavigationProp<any>>();
     const { height } = Dimensions.get('window');
     const { hasPermission, requestPermission } = useCameraPermission();
     const device = useCameraDevice('back');
     const scanLineAnim = useRef(new Animated.Value(0)).current;
     const opacityAnim = useRef(new Animated.Value(1)).current;
-
+    const camera = useRef<Camera>(null)
+    const [isActive, setIsActive] = useState(true);
+    const [codes, setCodes] = useState<Code[]>([]);
+    const [photo, setPhoto] = useState<{
+        height: number,
+        width: number,
+        path: string
+    } | null>(null);
     /**
      * 扫码结果
      */
     const codeScanner = useCodeScanner({
-        codeTypes: ['qr', 'ean-13', 'code-128'],
-        onCodeScanned: (codes) => {
+        codeTypes: ['code-128', 'ean-13', 'qr'],
+        onCodeScanned: async (codes) => {
             if (Array.isArray(codes) && codes.length > 0) {
-                if (onScanSuccess && typeof onScanSuccess === 'function') {
-                    onScanSuccess(codes[0].value as string);
-                    navigation.goBack();
+                if (codes.length === 1) {
+                    // if (onScanSuccess && typeof onScanSuccess === 'function') {
+                    //     onScanSuccess(codes[0].value as string);
+                    //     navigation.goBack();
+                    // }
+                } else if (codes.length > 1) {
+                    if (photo) return;
+                    try {
+                        const photh = await camera.current?.takePhoto();
+                        console.log("photh", JSON.stringify(photh))
+                        if (photh) {
+                            photh.path = `file://${photh.path}`;
+                            console.log("codes", JSON.stringify(codes))
+                            setPhoto(photh);
+                            setIsActive(false);
+                            setCodes(codes);
+                        }
+                    } catch (error) {
+                        // console.error("生成照片出错: ", error);
+                    }
                 }
             }
         }
@@ -101,31 +126,61 @@ function Scanner(props: IProps) {
             translucent={true}
         />
         <Camera
+            ref={camera}
             style={StyleSheet.absoluteFill}
             device={device}
-            isActive={true}
+            isActive={isActive}
             codeScanner={codeScanner}
+            photo={true}
+            onLayout={e => {
+                console.log("onLayout", e.nativeEvent.layout)
+                setLayout(e.nativeEvent.layout)
+            }}
+            resizeMode="contain"
         />
-        <TouchableOpacity style={styles.closeIcon} onPress={handleClose}>
-            <SvgXml width="28" height="28" xml={icon.Round_Close()} />
-        </TouchableOpacity>
-        <View style={styles.overlay}>
-            <Animated.View
-                style={[
-                    styles.scanLine,
-                    {
-                        transform: [{ translateY: scanLineAnim }],
-                        opacity: opacityAnim,
-                    },
-                ]}
-            >
-                <LinearGradient
-                    colors={['rgba(0, 255, 0, 0)', 'rgba(0, 255, 0, 0.5)']}
-                    style={styles.shadow}
-                />
-            </Animated.View>
-        </View>
-    </View>
+        {
+            isActive && <TouchableOpacity style={styles.closeIcon} onPress={handleClose}>
+                <SvgXml width="28" height="28" xml={icon.Round_Close()} />
+            </TouchableOpacity>
+        }
+        {
+            isActive && <View style={styles.overlay}>
+                <Animated.View
+                    style={[
+                        styles.scanLine,
+                        {
+                            transform: [{ translateY: scanLineAnim }],
+                            opacity: opacityAnim,
+                        },
+                    ]}
+                >
+                    <LinearGradient
+                        colors={['rgba(0, 255, 0, 0)', 'rgba(0, 255, 0, 0.5)']}
+                        style={styles.shadow}
+                    />
+                </Animated.View>
+            </View>
+        }
+        {
+            !isActive && photo && <Image source={{ uri: photo.path }} resizeMode="contain" />
+        }
+
+        {
+            codes.length > 0 && codes[0].corners?.map((item, index) => {
+                return <View
+                    key={index}
+                    style={{
+                        width: 5,
+                        height: 5,
+                        backgroundColor: 'red',
+                        position: 'absolute',
+                        top: item.y,
+                        left: item.x
+                    }}
+                ></View>
+            })
+        }
+    </View >
 }
 
 export default Scanner;

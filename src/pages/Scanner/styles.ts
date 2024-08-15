@@ -2,6 +2,7 @@ import {Dimensions, StyleSheet} from 'react-native';
 const {width, height} = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
+    position: 'relative',
     flex: 1,
   },
   overlay: {
@@ -25,8 +26,9 @@ const styles = StyleSheet.create({
     height: 40,
   },
   closeIcon: {
-    marginTop: 50,
-    marginLeft: 20,
+    position: 'absolute',
+    top: 50,
+    left: 20,
   },
 });
 
