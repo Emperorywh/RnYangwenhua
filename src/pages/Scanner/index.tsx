@@ -1,7 +1,7 @@
-import { Animated, Dimensions, Image, LayoutRectangle, StatusBar, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
+import { Animated, Dimensions, Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import styles from "./styles";
-import { IProps, ScannerRouteProp } from "./index.types";
-import { Camera, Code, useCameraDevice, useCameraPermission, useCodeScanner } from "react-native-vision-camera";
+import { ICenterPoint, IProps, ScannerRouteProp } from "./index.types";
+import { Camera, Code, Point, useCameraDevice, useCameraFormat, useCameraPermission, useCodeScanner } from "react-native-vision-camera";
 import { useEffect, useRef, useState } from "react";
 import LinearGradient from 'react-native-linear-gradient';
 import { SvgXml } from "react-native-svg";
@@ -13,16 +13,19 @@ import { NavigationProp, useNavigation, useRoute } from "@react-navigation/nativ
  */
 function Scanner(props: IProps) {
     const { onScanSuccess, onScanCancel } = useRoute<ScannerRouteProp>()?.params || {};
-    const [layout, setLayout] = useState<LayoutRectangle | null>(null);
     const navigation = useNavigation<NavigationProp<any>>();
-    const { height } = Dimensions.get('window');
+    const { height, width } = Dimensions.get('window');
     const { hasPermission, requestPermission } = useCameraPermission();
     const device = useCameraDevice('back');
+    const format = useCameraFormat(device, [
+        { videoResolution: 'max' },
+        { photoResolution: 'max' }
+    ]);
     const scanLineAnim = useRef(new Animated.Value(0)).current;
     const opacityAnim = useRef(new Animated.Value(1)).current;
-    const camera = useRef<Camera>(null)
+    const camera = useRef<Camera>(null);
     const [isActive, setIsActive] = useState(true);
-    const [codes, setCodes] = useState<Code[]>([]);
+    const [centerPoints, setCenterPoints] = useState<ICenterPoint[]>([]);
     const [photo, setPhoto] = useState<{
         height: number,
         width: number,
@@ -32,25 +35,20 @@ function Scanner(props: IProps) {
      * 扫码结果
      */
     const codeScanner = useCodeScanner({
-        codeTypes: ['code-128', 'ean-13', 'qr'],
+        codeTypes: ['qr', 'aztec', 'data-matrix', 'ean-13', 'ean-8', 'pdf-417', 'code-128', 'code-39', 'code-93', 'itf', 'upc-a', 'upc-e'],
         onCodeScanned: async (codes) => {
             if (Array.isArray(codes) && codes.length > 0) {
                 if (codes.length === 1) {
-                    // if (onScanSuccess && typeof onScanSuccess === 'function') {
-                    //     onScanSuccess(codes[0].value as string);
-                    //     navigation.goBack();
-                    // }
+                    handleScanSuccess(codes[0].value as string);
                 } else if (codes.length > 1) {
                     if (photo) return;
                     try {
                         const photh = await camera.current?.takePhoto();
-                        console.log("photh", JSON.stringify(photh))
                         if (photh) {
                             photh.path = `file://${photh.path}`;
-                            console.log("codes", JSON.stringify(codes))
+                            onFormatCenterPoints(codes);
                             setPhoto(photh);
                             setIsActive(false);
-                            setCodes(codes);
                         }
                     } catch (error) {
                         // console.error("生成照片出错: ", error);
@@ -59,6 +57,17 @@ function Scanner(props: IProps) {
             }
         }
     });
+
+    /**
+     * 扫码成功
+     * @param value 
+     */
+    const handleScanSuccess = (value: string) => {
+        if (onScanSuccess && typeof onScanSuccess === 'function') {
+            onScanSuccess(value);
+            navigation.goBack();
+        }
+    }
 
     /**
      * 点击取消
@@ -106,6 +115,50 @@ function Scanner(props: IProps) {
         ).start();
     };
 
+    /**
+     * 格式化中心坐标点
+     * @param codes 
+     */
+    const onFormatCenterPoints = (codes: Code[]) => {
+        if (Array.isArray(codes) && codes.length > 0) {
+            const points: ICenterPoint[] = [];
+            codes.forEach(item => {
+                const point: ICenterPoint = {
+                    x: 0,
+                    y: 0,
+                    value: item.value || '',
+                    type: item.type
+                }
+                if (item.frame) {
+                    const { width = 0, height = 0 } = item.frame;
+                    if (item.corners) {
+                        item.corners.forEach(corItem => {
+                            corItem.y += height;
+                            corItem.x -= width;
+                        })
+                    }
+                }
+                const center = calculateCenter(item.corners || []);
+                point.x = center.x;
+                point.y = center.y;
+                points.push(point);
+            });
+            setCenterPoints(points);
+        }
+    }
+
+    const calculateCenter = (points: Point[]) => {
+        const totalPoints = points.length;
+        const center = points.reduce((acc, point) => {
+            acc.x += point.x;
+            acc.y += point.y;
+            return acc;
+        }, { x: 0, y: 0 });
+        center.x /= totalPoints;
+        center.y /= totalPoints;
+        return center;
+    };
+
     useEffect(() => {
         requestPermission();
         startScanAnimation();
@@ -127,16 +180,12 @@ function Scanner(props: IProps) {
         />
         <Camera
             ref={camera}
-            style={StyleSheet.absoluteFill}
             device={device}
             isActive={isActive}
             codeScanner={codeScanner}
             photo={true}
-            onLayout={e => {
-                console.log("onLayout", e.nativeEvent.layout)
-                setLayout(e.nativeEvent.layout)
-            }}
-            resizeMode="contain"
+            style={StyleSheet.absoluteFill}
+            format={format}
         />
         {
             isActive && <TouchableOpacity style={styles.closeIcon} onPress={handleClose}>
@@ -162,22 +211,25 @@ function Scanner(props: IProps) {
             </View>
         }
         {
-            !isActive && photo && <Image source={{ uri: photo.path }} resizeMode="contain" />
+            !isActive && photo && <Image source={{ uri: photo.path }} />
         }
-
         {
-            codes.length > 0 && codes[0].corners?.map((item, index) => {
-                return <View
+            centerPoints.length > 0 && centerPoints.map((item, index) => {
+                return <TouchableOpacity
                     key={index}
                     style={{
-                        width: 5,
-                        height: 5,
-                        backgroundColor: 'red',
                         position: 'absolute',
-                        top: item.y,
-                        left: item.x
+                        top: item.y - 14,
+                        left: item.x - 14,
+                        backgroundColor: '#FFF',
+                        borderRadius: 100,
+                        width: 28,
+                        height: 28
                     }}
-                ></View>
+                    onPress={() => handleScanSuccess(item.value)}
+                >
+                    <SvgXml width="28" height="28" xml={icon.Round_Arrow_Right()} />
+                </TouchableOpacity>
             })
         }
     </View >

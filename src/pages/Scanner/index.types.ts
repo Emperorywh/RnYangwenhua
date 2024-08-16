@@ -7,3 +7,10 @@ export type RootStackParamList = {
 };
 
 export type ScannerRouteProp = RouteProp<RootStackParamList, 'Scanner'>;
+
+export interface ICenterPoint {
+  x: number;
+  y: number;
+  value: string;
+  type: string;
+}
