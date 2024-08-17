@@ -1,5 +1,5 @@
-import {Dimensions, StyleSheet} from 'react-native';
-const {width, height} = Dimensions.get('window');
+import { Dimensions, StyleSheet } from 'react-native';
+const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
@@ -30,6 +30,39 @@ const styles = StyleSheet.create({
     top: 50,
     left: 20,
   },
+  centerPointItem: {
+    position: 'absolute',
+    backgroundColor: '#FFF',
+    borderRadius: 100,
+    width: 28,
+    height: 28
+  },
+  scanDescriptioon: {
+    position: 'absolute',
+    bottom: 150,
+    width: width,
+    alignItems: 'center'
+  },
+  scanDescriptioonText: {
+    color: '#FFF',
+  },
+  photoAlbumBox: {
+    position: 'absolute',
+    bottom: 50,
+    right: 50
+  },
+  photoAlbumIcon: {
+    backgroundColor: '#6e6e6c',
+    padding: 10,
+    borderRadius: 100
+  },
+  photoAlbumIconTextWapper: {
+    alignItems: 'center',
+    marginTop: 5
+  },
+  photoAlbumIconText: {
+    color: '#FFF'
+  }
 });
 
 export default styles;

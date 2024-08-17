@@ -1,4 +1,4 @@
-import { Animated, Dimensions, Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Animated, Dimensions, Image, PermissionsAndroid, Platform, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import styles from "./styles";
 import { ICenterPoint, IProps, ScannerRouteProp } from "./index.types";
 import { Camera, Code, Point, useCameraDevice, useCameraFormat, useCameraPermission, useCodeScanner } from "react-native-vision-camera";
@@ -7,6 +7,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import { SvgXml } from "react-native-svg";
 import icon from "../../icon";
 import { NavigationProp, useNavigation, useRoute } from "@react-navigation/native";
+import { launchImageLibrary } from 'react-native-image-picker';
+import { Toast } from "@ant-design/react-native";
+
 /**
  * 扫描
  * @returns 
@@ -31,6 +34,9 @@ function Scanner(props: IProps) {
         width: number,
         path: string
     } | null>(null);
+
+    const animatedRef = useRef<Animated.CompositeAnimation>(null);
+
     /**
      * 扫码结果
      */
@@ -39,7 +45,7 @@ function Scanner(props: IProps) {
         onCodeScanned: async (codes) => {
             if (Array.isArray(codes) && codes.length > 0) {
                 if (codes.length === 1) {
-                    handleScanSuccess(codes[0].value as string);
+                    // handleScanSuccess(codes[0].value as string);
                 } else if (codes.length > 1) {
                     if (photo) return;
                     try {
@@ -79,6 +85,9 @@ function Scanner(props: IProps) {
         navigation.goBack();
     }
 
+    /**
+     * 动画开始
+     */
     const startScanAnimation = () => {
         Animated.loop(
             Animated.sequence([
@@ -159,10 +168,75 @@ function Scanner(props: IProps) {
         return center;
     };
 
+    // 请求存储权限 (仅限安卓)
+    const requestStoragePermission = async () => {
+        if (Platform.OS === 'android') {
+            try {
+                const granted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+                    {
+                        title: "访问存储权限",
+                        message: "此应用需要访问存储以选择照片",
+                        buttonNeutral: "稍后再问",
+                        buttonNegative: "拒绝",
+                        buttonPositive: "允许",
+                    }
+                );
+                if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+                    Toast.info("权限被拒绝, 存储访问权限未授予")
+                    return false;
+                }
+                return true;
+            } catch (err) {
+                console.warn(err);
+                return false;
+            }
+        }
+        return true;
+    };
+
+    // 打开相册选择照片
+    const selectPhotoFromGallery = async () => {
+        setIsActive(false);
+        const hasPermission = await requestStoragePermission();
+        if (!hasPermission) return;
+        launchImageLibrary(
+            {
+                mediaType: 'photo',
+                includeBase64: false,
+            },
+            (response: any) => {
+                if (response.didCancel) {
+                    Toast.info('用户取消了选择');
+                    setIsActive(true);
+                } else if (response.error) {
+                    Toast.info('出错：' + JSON.stringify(response.error));
+                    setIsActive(true);
+                } else {
+                    if (Array.isArray(response?.assets) && response.assets.length > 0) {
+                        const assets = response.assets[0];
+                        setPhoto({
+                            width: assets.width,
+                            height: assets.height,
+                            path: `file://${assets.originalPath}`
+                        })
+                    } else {
+                        setIsActive(true);
+                    }
+                }
+            }
+        );
+    };
+
     useEffect(() => {
         requestPermission();
-        startScanAnimation();
     }, [])
+
+    useEffect(() => {
+        if (isActive) {
+            startScanAnimation();
+        }
+    }, [isActive]);
 
     if (!hasPermission) return <View style={styles.container}>
         <Text>无相机权限</Text>
@@ -186,6 +260,7 @@ function Scanner(props: IProps) {
             photo={true}
             style={StyleSheet.absoluteFill}
             format={format}
+            fps={30}
         />
         {
             isActive && <TouchableOpacity style={styles.closeIcon} onPress={handleClose}>
@@ -217,21 +292,29 @@ function Scanner(props: IProps) {
             centerPoints.length > 0 && centerPoints.map((item, index) => {
                 return <TouchableOpacity
                     key={index}
-                    style={{
-                        position: 'absolute',
+                    style={[styles.centerPointItem, {
                         top: item.y - 14,
                         left: item.x - 14,
-                        backgroundColor: '#FFF',
-                        borderRadius: 100,
-                        width: 28,
-                        height: 28
-                    }}
+                    }]}
                     onPress={() => handleScanSuccess(item.value)}
                 >
                     <SvgXml width="28" height="28" xml={icon.Round_Arrow_Right()} />
                 </TouchableOpacity>
             })
         }
+        {
+            isActive && <View style={styles.scanDescriptioon}>
+                <Text style={styles.scanDescriptioonText}>识别二维码/条形码</Text>
+            </View>
+        }
+        <TouchableOpacity style={styles.photoAlbumBox} onPress={selectPhotoFromGallery}>
+            <View style={styles.photoAlbumIcon}>
+                <SvgXml width="28" height="28" xml={icon.Photo_Album()} />
+            </View>
+            <View style={styles.photoAlbumIconTextWapper}>
+                <Text style={styles.photoAlbumIconText}>相册</Text>
+            </View>
+        </TouchableOpacity>
     </View >
 }
 
